@@ -60,8 +60,8 @@ export function topsis(Xs, weights, types) {
   const prefs = range(Xs.length).map(ix => {
     return D_neg[ix] / (D_pos[ix] + D_neg[ix])
   })
-  console.log('prefs')
-  console.log(prefs)
+  // console.log('prefs')
+  // console.log(prefs)
   let pwi = prefs.map((p, i) => ({
     p,
     i
