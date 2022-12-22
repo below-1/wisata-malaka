@@ -21,7 +21,7 @@ export default async fastify => {
     handler: async (request, reply) => {
       let payload = {...request.body}
       const kriteria_list = await Kriteria.find()
-      // console.log( kriteria_list );
+      console.log( kriteria_list );
       const keys = kriteria_list.map(it => it._id.toString())
       let weights = values(pick(payload, keys)).map(it => parseInt(it))
       const total_weights = sum(weights)
@@ -40,40 +40,52 @@ export default async fastify => {
             model: 'Kriteria'
           }
         })
-      // console.log(items.kriterias);
-      // console.log('items');
       items = items.filter(it => it.kriterias.length && it.kriterias.every(kv => kv.value && kv.kriteria));
       if (!items.length) {
         return reply.view('app/rekomendasi/result', {
           error: 'belum ada satupun data kriteria yang diisi!'
         })
       }
-      // console.log(items.map(it => it.nama));
-      // console.log('items');
-      
-      const Xs = items.map(it => 
-        it.kriterias.map(kv => {
+      const Xs = items.map(it => {
+        it.kriterias.sort((kv_a, kv_b) => {
+          const idx_a = kriteria_list.findIndex(k => {
+            return k._id.equals( kv_a.kriteria._id )
+          });
+          const idx_b = kriteria_list.findIndex(k => {
+            return k._id.equals( kv_b.kriteria._id )
+          });
+          return idx_a - idx_b;
+        });
+        return it.kriterias.map((kv, i) => {
+          // console.log( kv )
           const v = kv.value
           const ktype = kv.kriteria.type
+          // console.log('ktype = ', ktype)
           if (ktype == 'NUMBER') {
             throw new Error('not_implemented')
           } else if (ktype == 'OPTIONS') {
             const options = kv.kriteria.text_options
+            // console.log(' = ', options)
             if (kv.kriteria.multiple) {
               const selected = options
-                .filter(opt => v.includes(opt.label))
-                .map(opt => opt.value)
+              .filter(opt => v.includes(opt.label))
+              .map(opt => opt.value)
               return selected.reduce((a, b) => a + b, 0)
             } else {
               const selected = options.find(opt => opt.label == kv.value)
               if (!selected) {
                 throw new Error('KV_INVALID')
               }
+              if (kv.kriteria.nama == 'Biaya masuk') {
+                console.log('v = ', v)
+                console.log('i = ', i)
+                console.log(selected)
+              }
               return selected.value
             }
           }
         })
-      )
+      })
       // console.log('Xs')
       // Xs.forEach(row =>  {
       //   console.log(row)
