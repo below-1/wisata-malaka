@@ -41,6 +41,9 @@ export default async (fastify) => {
       }
     });
     
+    console.log( item )
+    console.log( kriteria_values )
+    console.log( kriteriaItems )
     // console.log(kriteria_values.map(it => it.value.includes('Parkiran')));
     await reply.xview('app/wisata/detail', {
       item,

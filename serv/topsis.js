@@ -15,7 +15,7 @@ export function topsis(Xs, weights, types) {
   let Rs = []
   for (let i = 0; i < N_KRITERIA; i++) {
     const norm = norm_column(Xs, i);
-    // console.log(column(Xs, i))
+    // console.log(norm)
     // throw new Error('stop')
     const Ri = column(Xs, i).map(x => x / norm)
     Rs.push(Ri) 
@@ -60,8 +60,8 @@ export function topsis(Xs, weights, types) {
   const prefs = range(Xs.length).map(ix => {
     return D_neg[ix] / (D_pos[ix] + D_neg[ix])
   })
-  console.log('prefs')
-  console.log(prefs)
+  // console.log('prefs')
+  // console.log(prefs)
   let pwi = prefs.map((p, i) => ({
     p,
     i
